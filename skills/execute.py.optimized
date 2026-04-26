@@ -1,0 +1,89 @@
+import os
+import json
+import importlib.util
+from datetime import datetime
+import tempfile
+import subprocess
+
+class Runner:
+    def __init__(self, code_string, input_data=None):
+        self.code_string = code_string
+        self.input_data = input_data
+
+    def execute(self):
+        runner_code = self._indent(self.code_string)
+        with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as temp:
+            temp.write(runner_code)
+            temp_path = temp.name
+        try:
+            proc = subprocess.run(
+                [sys.executable, temp_path],
+                capture_output=True,
+                text=True,
+                timeout=self.timeout
+            )
+            if proc.stdout:
+                try:
+                    return json.loads(proc.stdout)
+                except json.JSONDecodeError:
+                    return {"status": "error", "message": "Malformed output from sandbox", "raw": proc.stdout}
+            elif proc.stderr:
+                return {"status": "error", "message": proc.stderr}
+            else:
+                return {"status": "error", "message": "No output from sandbox"}
+        except subprocess.TimeoutExpired:
+            return {"status": "error", "message": f"Execution timed out after {self.timeout} seconds"}
+        finally:
+            if os.path.exists(temp_path):
+                os.remove(temp_path)
+
+
+def _indent(code_string):
+    return "\n".join("    " + line for line in code_string.split("\n"))
+
+
+class Sandbox:
+    def __init__(self, code_string, input_data=None):
+        self.code_string = code_string
+        self.input_data = input_data
+
+    def run(self):
+        return Runner(self.code_string, self.input_data).execute()
+
+
+def execute(self, code_string, input_data=None):
+    """
+    Executes a python code string. The code string is expected to define a run(input_data) function.
+    """
+    runner = Sandbox(code_string, input_data)
+    return runner.run()
+
+
+META = {
+    "name": "execute",
+    "version": "harvested-1.1",
+    "description": "Auto-harvested from sandbox.py",
+    "inputs": ["code_string", "input_data"],
+    "outputs": ["result"]
+}
+
+class AutoHarvester:
+    def __init__(self, code_string, input_data=None):
+        self.code_string = code_string
+        self.input_data = input_data
+
+    def execute(self):
+        return execute(self, self.code_string, self.input_data)
+
+
+def run(input_data):
+    # Auto-generated wrapper
+    try:
+        # Map input_data to function args
+        kwargs = {k: input_data.get(k) for k in META["inputs"] if k in input_data}
+        # Note: If it was a method, this execution might fail without 'self' context.
+        # This is a known limitation of the initial extraction phase.
+        res = AutoHarvester(**kwargs).execute()
+        return {"status": "success", "result": res}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}

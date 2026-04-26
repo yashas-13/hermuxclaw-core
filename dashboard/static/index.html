@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HX-CORE | Command Center</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <!-- HEADER (GLOBAL STATE) -->
+    <header id="global-header">
+        <div class="brand">HX-CORE</div>
+        <div class="system-status" id="sys-status">INITIALIZING...</div>
+        <div style="display: flex; gap: 30px; font-size: 0.85rem;">
+            <div>ENERGY: <span id="header-energy" style="color: var(--state-active);">--</span></div>
+            <div>QUEUE: <span id="header-tasks" style="color: var(--state-normal);">--</span></div>
+        </div>
+    </header>
+
+    <main>
+        <!-- GRAPH (LEFT CORE) -->
+        <section class="section" id="graph-panel">
+            <h2>System Intelligence View (AST)</h2>
+            <div id="graph-container">
+                <svg id="graph-canvas"></svg>
+                <div id="tooltip" class="tooltip"></div>
+            </div>
+        </section>
+
+        <!-- SWARM + ENERGY (RIGHT CONTROL) -->
+        <section class="section" id="control-panel">
+            <h2>Resource Governor & Swarm</h2>
+            <div class="energy-bar-container">
+                <div class="energy-bar-bg">
+                    <div class="energy-bar-fill" id="energy-fill" style="width: 0%;"></div>
+                </div>
+            </div>
+            <div class="scroll-list" id="swarm-list">
+                <!-- Swarm injected -->
+            </div>
+        </section>
+
+        <!-- TASK FLOW (BOTTOM LEFT) -->
+        <section class="section" id="task-panel">
+            <h2>Execution Visibility</h2>
+            <div class="scroll-list" id="task-list">
+                <!-- Tasks injected -->
+            </div>
+        </section>
+
+        <!-- ALERTS (BOTTOM RIGHT) -->
+        <section class="section" id="alert-panel">
+            <h2>Critical Signals</h2>
+            <div class="scroll-list" id="alert-list">
+                <!-- Alerts injected -->
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

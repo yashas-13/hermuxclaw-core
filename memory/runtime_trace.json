@@ -1,0 +1,338 @@
+[
+  {
+    "caller": "ingest_workspace",
+    "callee": "workload",
+    "file": "core/architecture_engine.py",
+    "timestamp": "2026-04-27T02:32:18.076775"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.078020"
+  },
+  {
+    "caller": "<module>",
+    "callee": "HermuxclawCore",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.078081"
+  },
+  {
+    "caller": "workload",
+    "callee": "__init__",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.078222"
+  },
+  {
+    "caller": "__init__",
+    "callee": "_load_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.078360"
+  },
+  {
+    "caller": "__init__",
+    "callee": "run_evolution_cycle",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.078690"
+  },
+  {
+    "caller": "run_evolution_cycle",
+    "callee": "register_skill",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.078829"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "skills/ast_analyzer.py",
+    "timestamp": "2026-04-27T02:32:18.079362"
+  },
+  {
+    "caller": "<module>",
+    "callee": "HermuxclawASTParser",
+    "file": "skills/ast_analyzer.py",
+    "timestamp": "2026-04-27T02:32:18.079402"
+  },
+  {
+    "caller": "register_skill",
+    "callee": "_save_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.079492"
+  },
+  {
+    "caller": "run_evolution_cycle",
+    "callee": "register_skill",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.088225"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "skills/discovery_engine.py",
+    "timestamp": "2026-04-27T02:32:18.088966"
+  },
+  {
+    "caller": "register_skill",
+    "callee": "_save_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.140750"
+  },
+  {
+    "caller": "run_evolution_cycle",
+    "callee": "register_skill",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.149121"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "skills/skill_extractor.py",
+    "timestamp": "2026-04-27T02:32:18.149759"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "skills/ast_analyzer.py",
+    "timestamp": "2026-04-27T02:32:18.152325"
+  },
+  {
+    "caller": "<module>",
+    "callee": "HermuxclawASTParser",
+    "file": "skills/ast_analyzer.py",
+    "timestamp": "2026-04-27T02:32:18.152382"
+  },
+  {
+    "caller": "register_skill",
+    "callee": "_save_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.152560"
+  },
+  {
+    "caller": "run_evolution_cycle",
+    "callee": "register_skill",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.160684"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "skills/register_skill.py",
+    "timestamp": "2026-04-27T02:32:18.161242"
+  },
+  {
+    "caller": "register_skill",
+    "callee": "_save_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.161315"
+  },
+  {
+    "caller": "run_evolution_cycle",
+    "callee": "register_skill",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.169553"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "skills/visit_import.py",
+    "timestamp": "2026-04-27T02:32:18.170089"
+  },
+  {
+    "caller": "register_skill",
+    "callee": "_save_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.170156"
+  },
+  {
+    "caller": "run_evolution_cycle",
+    "callee": "register_skill",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.178322"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "skills/scan_directory.py",
+    "timestamp": "2026-04-27T02:32:18.178895"
+  },
+  {
+    "caller": "register_skill",
+    "callee": "_save_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.178965"
+  },
+  {
+    "caller": "run_evolution_cycle",
+    "callee": "register_skill",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.188691"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "skills/extract_code_block.py",
+    "timestamp": "2026-04-27T02:32:18.189276"
+  },
+  {
+    "caller": "register_skill",
+    "callee": "_save_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.189346"
+  },
+  {
+    "caller": "run_evolution_cycle",
+    "callee": "register_skill",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.197499"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "skills/load_providers.py",
+    "timestamp": "2026-04-27T02:32:18.198037"
+  },
+  {
+    "caller": "register_skill",
+    "callee": "_save_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.198107"
+  },
+  {
+    "caller": "run_evolution_cycle",
+    "callee": "register_skill",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.206285"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "skills/__getitem__.py",
+    "timestamp": "2026-04-27T02:32:18.206828"
+  },
+  {
+    "caller": "register_skill",
+    "callee": "_save_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.206893"
+  },
+  {
+    "caller": "run_evolution_cycle",
+    "callee": "register_skill",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.214989"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "skills/set_model.py",
+    "timestamp": "2026-04-27T02:32:18.215481"
+  },
+  {
+    "caller": "register_skill",
+    "callee": "_save_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.215543"
+  },
+  {
+    "caller": "run_evolution_cycle",
+    "callee": "register_skill",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.223663"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "skills/neural_mutator.py",
+    "timestamp": "2026-04-27T02:32:18.224341"
+  },
+  {
+    "caller": "register_skill",
+    "callee": "_save_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.224461"
+  },
+  {
+    "caller": "run_evolution_cycle",
+    "callee": "register_skill",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.232714"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "skills/_evolution_and_sync.py",
+    "timestamp": "2026-04-27T02:32:18.233288"
+  },
+  {
+    "caller": "register_skill",
+    "callee": "_save_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.233353"
+  },
+  {
+    "caller": "run_evolution_cycle",
+    "callee": "register_skill",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.241505"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "skills/execute.py",
+    "timestamp": "2026-04-27T02:32:18.242111"
+  },
+  {
+    "caller": "register_skill",
+    "callee": "_save_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.242180"
+  },
+  {
+    "caller": "run_evolution_cycle",
+    "callee": "register_skill",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.250291"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "skills/vision_processor.py",
+    "timestamp": "2026-04-27T02:32:18.250905"
+  },
+  {
+    "caller": "register_skill",
+    "callee": "_save_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.904172"
+  },
+  {
+    "caller": "run_evolution_cycle",
+    "callee": "register_skill",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.912488"
+  },
+  {
+    "caller": "_call_with_frames_removed",
+    "callee": "<module>",
+    "file": "skills/low_ram_vision.py",
+    "timestamp": "2026-04-27T02:32:18.913091"
+  },
+  {
+    "caller": "register_skill",
+    "callee": "_save_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.913159"
+  },
+  {
+    "caller": "run_evolution_cycle",
+    "callee": "_save_registry",
+    "file": "core/evolution_engine.py",
+    "timestamp": "2026-04-27T02:32:18.921370"
+  },
+  {
+    "caller": "ingest_workspace",
+    "callee": "stop",
+    "file": "core/runtime_tracer.py",
+    "timestamp": "2026-04-27T02:32:18.929604"
+  }
+]

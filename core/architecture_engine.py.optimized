@@ -1,0 +1,187 @@
+import ast
+import os
+import json
+import sys
+from collections import deque
+
+# Ensure core is accessible
+sys.path.append(os.path.expanduser("~/hermuxclaw"))
+from core.runtime_tracer import RuntimeTracer
+from core.anomaly_detector import AnomalyDetector
+
+class GlobalSymbolTable:
+    def __init__(self):
+        self.functions = {} # name -> file_path
+        self.classes = {}   # name -> file_path
+        self.imports = {}   # file_path -> list of imports
+
+    def register_module(self, file_path, ast_data):
+        for fn in ast_data.get("functions", []):
+            self.functions[fn["name"]] = file_path
+        for cls in ast_data.get("classes", []):
+            self.classes[cls["name"]] = file_path
+        self.imports[file_path] = ast_data.get("imports", [])
+
+class ArchitectureAnalyzer(ast.NodeVisitor):
+    def __init__(self, file_path, symbol_table):
+        self.file_path = file_path
+        self.symbol_table = symbol_table
+        self.calls = []
+        self.dependencies = []
+
+    def visit_Call(self, node):
+        if isinstance(node.func, ast.Name):
+            self.calls.append(node.func.id)
+        elif isinstance(node.func, ast.Attribute):
+            self.calls.append(node.func.attr)
+        self.generic_visit(node)
+
+    def visit_Import(self, node):
+        for alias in node.names:
+            self.dependencies.append(alias.name)
+        self.generic_visit(node)
+
+    def visit_ImportFrom(self, node):
+        if node.module:
+            self.dependencies.append(node.module)
+        self.generic_visit(node)
+
+class CallGraphBuilder:
+    def __init__(self, symbol_table):
+        self.symbol_table = symbol_table
+        self.call_graph = {}
+
+    def build_call_graph(self, file_path, ast_data):
+        self.symbol_table.register_module(file_path, ast_data)
+        analyzer = ArchitectureAnalyzer(file_path, self.symbol_table)
+        analyzer.visit(ast.parse(open(file_path).read()))
+        self.call_graph[file_path] = list(set(analyzer.calls))
+
+class DependencyGraphBuilder:
+    def __init__(self, symbol_table):
+        self.symbol_table = symbol_table
+        self.dep_graph = {}
+
+    def build_dependency_graph(self, file_path, ast_data):
+        self.symbol_table.register_module(file_path, ast_data)
+        analyzer = ArchitectureAnalyzer(file_path, self.symbol_table)
+        analyzer.visit(ast.parse(open(file_path).read()))
+        self.dep_graph[file_path] = list(set(analyzer.dependencies))
+
+class ArchitectureMapBuilder:
+    def __init__(self, call_graph_builder, dependency_graph_builder):
+        self.call_graph_builder = call_graph_builder
+        self.dependency_graph_builder = dependency_graph_builder
+        self.arch_map = {}
+
+    def build_architecture_map(self, workspace_root):
+        for root, _, files in os.walk(workspace_root):
+            if any(x in root for x in [".git", "node_modules", "__pycache__", "memory"]): continue
+            for f in files:
+                if f.endswith(".py"):
+                    file_path = os.path.join(root, f)
+                    ast_data = self.call_graph_builder.build_call_graph(file_path, {})
+                    self.arch_map[file_path] = {
+                        "layer": self._determine_layer(ast_data),
+                        "calls": self.call_graph_builder.call_graph[file_path],
+                        "dependencies": self.dependency_graph_builder.build_dependency_graph(file_path, {})
+                    }
+
+    def _determine_layer(self, ast_data):
+        calls = ast_data.get("calls", [])
+        dependencies = ast_data.get("dependencies", [])
+        num_calls = len(calls)
+        num_deps = len(dependencies)
+        if num_calls > 3 and num_deps < 2: return "utility"
+        elif num_deps > 3: return "core"
+        else: return "entry"
+
+class RootIntelligenceV2:
+    def __init__(self, workspace_root):
+        self.root = workspace_root
+        self.symbol_table = GlobalSymbolTable()
+        self.call_graph_builder = CallGraphBuilder(self.symbol_table)
+        self.dependency_graph_builder = DependencyGraphBuilder(self.symbol_table)
+        self.arch_map_builder = ArchitectureMapBuilder(self.call_graph_builder, self.dependency_graph_builder)
+        self.runtime_trace = []
+        self.tracer = RuntimeTracer(workspace_root)
+        self.detector = None
+
+    def ingest_workspace(self, run_tracing=False, target_workload=None):
+        print(f"[*] Root Intelligence: Mapping Workspace Architecture...")
+        
+        # 1. RUNTIME TRACING (Behavioral Truth)
+        if run_tracing and target_workload:
+            self.tracer.start()
+            try:
+                target_workload()
+            except Exception as e:
+                print(f"[!] Workload Error during tracing: {e}")
+            finally:
+                self.tracer.stop()
+                self.runtime_trace = self.tracer.trace_data
+                self.tracer.save_trace()
+
+        # 2. STATIC ANALYSIS (Structural Framework)
+        files_to_process = []
+        for root, _, files in os.walk(self.root):
+            if any(x in root for x in [".git", "node_modules", "__pycache__", "memory"]): continue
+            for f in files:
+                if f.endswith(".py"):
+                    files_to_process.append(os.path.join(root, f))
+
+        # Pass 1: Build Global Symbol Table
+        for fpath in files_to_process:
+            self.symbol_table.register_module(fpath, {})
+
+        # Pass 2: Build Call and Dependency Graphs
+        for fpath in files_to_process:
+            self.call_graph_builder.build_call_graph(fpath, {})
+            self.dependency_graph_builder.build_dependency_graph(fpath, {})
+
+        self.arch_map_builder.build_architecture_map(self.root)
+
+        # 3. ANOMALY DETECTION
+        self.detector = AnomalyDetector(self.arch_map_builder.arch_map)
+        self.detector.detect()
+
+    def generate_full_report(self):
+        report = []
+        report.append("\n" + "="*60)
+        report.append("HERMUXCLAW HYBRID INTELLIGENCE REPORT")
+        report.append("="*60)
+        
+        for file, data in self.arch_map_builder.arch_map.items():
+            report.append(f"[{data['layer'].upper()}] {file} (Complexity: {data['calls']} calls, {data['dependencies']} dependencies)")
+            
+        report.append("\n" + self.detector.generate_report())
+        report.append("\n" + "="*60)
+        return "\n".join(report)
+
+    def generate_dot_graph(self):
+        dot = ["digraph HERMUXCLAW_ARCH {", "  rankdir=LR;", "  node [shape=box, style=filled, fontname=Arial];"]
+        colors = {"entry": "lightblue", "core": "lightsalmon", "utility": "lightgray"}
+        for file, data in self.arch_map_builder.arch_map.items():
+            color = colors.get(data["layer"], "white")
+            dot.append(f'  "{file}" [fillcolor={color}, label="{file}\\n({data["layer"]})"];')
+            for target in data["calls"]:
+                dot.append(f'  "{file}" -> "{target}" [color=blue];')
+        dot.append("}")
+        return "\n".join(dot)
+
+if __name__ == "__main__":
+    engine = RootIntelligenceV2(os.path.expanduser("~/hermuxclaw"))
+    
+    def workload():
+        # A simple workload to trace: Initialize the core and register a skill
+        from core.evolution_engine import HermuxclawCore
+        core = HermuxclawCore()
+        
+    engine.ingest_workspace(run_tracing=True, target_workload=workload)
+    print(engine.generate_full_report())
+    
+    # Save DOT graph
+    dot_graph = engine.generate_dot_graph()
+    with open(os.path.expanduser("~/hermuxclaw/memory/architecture.dot"), "w") as f:
+        f.write(dot_graph)
+    print(f"\n[✓] Hybrid Architecture Map saved to ~/hermuxclaw/memory/architecture.dot")

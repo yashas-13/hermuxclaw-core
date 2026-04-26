@@ -1,0 +1,79 @@
+
+import os
+import json
+import importlib.util
+from datetime import datetime
+
+META = {
+    "name": "execute",
+    "version": "harvested-1.1",
+    "description": "Auto-harvested from sandbox.py",
+    "inputs": ["code_string", "input_data"],
+    "outputs": ["result"]
+}
+
+def execute(self, code_string, input_data=None):
+    """
+    Executes a python code string. The code string is expected to define a run(input_data) function.
+    """
+    # Create a runner script that imports and executes the untrusted code
+    runner_code = f"""
+import json
+import sys
+try:
+# Inject untrusted code
+{self._indent(code_string)}
+
+input_data = {json.dumps(input_data) if input_data else 'None'}
+
+if 'run' in locals():
+    result = run(input_data)
+    print(json.dumps({{"status": "success", "result": result}}))
+else:
+    print(json.dumps({{"status": "error", "message": "No run() function found"}}))
+except Exception as e:
+print(json.dumps({{"status": "error", "message": str(e), "type": type(e).__name__}}))
+"""
+    
+    with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as temp:
+        temp.write(runner_code)
+        temp_path = temp.name
+    try:
+        # Run the temporary script in a separate process
+        proc = subprocess.run(
+            [sys.executable, temp_path],
+            capture_output=True,
+            text=True,
+            timeout=self.timeout
+        )
+        
+        # Attempt to parse the output
+        if proc.stdout:
+            try:
+                return json.loads(proc.stdout)
+            except json.JSONDecodeError:
+                return {"status": "error", "message": "Malformed output from sandbox", "raw": proc.stdout}
+        elif proc.stderr:
+            return {"status": "error", "message": proc.stderr}
+        else:
+            return {"status": "error", "message": "No output from sandbox"}
+            
+    except subprocess.TimeoutExpired:
+        return {"status": "error", "message": f"Execution timed out after {self.timeout} seconds"}
+    finally:
+        if os.path.exists(temp_path):
+            os.remove(temp_path)
+            
+
+
+def run(input_data):
+    # Auto-generated wrapper
+    try:
+        # Map input_data to function args
+        kwargs = {k: input_data.get(k) for k in META["inputs"] if k in input_data}
+        # Note: If it was a method, this execution might fail without 'self' context.
+        # This is a known limitation of the initial extraction phase.
+        res = execute(**kwargs)
+        return {"status": "success", "result": res}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}

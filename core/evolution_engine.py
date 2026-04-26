@@ -1,0 +1,78 @@
+import os
+import json
+import importlib.util
+import sys
+from datetime import datetime
+
+class HermuxclawCore:
+    def __init__(self):
+        self.base_dir = os.path.expanduser("~/hermuxclaw")
+        self.skills_dir = os.path.join(self.base_dir, "skills")
+        self.memory_file = os.path.join(self.base_dir, "memory/registry.json")
+        self.registry = self._load_registry()
+        # Auto-register existing skills on startup
+        self.run_evolution_cycle()
+
+    def _load_registry(self):
+        if os.path.exists(self.memory_file):
+            with open(self.memory_file, "r") as f:
+                return json.load(f)
+        return {"skills": {}, "last_evolution": None}
+
+    def _save_registry(self):
+        with open(self.memory_file, "w") as f:
+            json.dump(self.registry, f, indent=2)
+
+    def register_skill(self, skill_file):
+        """Dynamic loading and registration of a skill"""
+        skill_name = os.path.basename(skill_file).replace(".py", "")
+        
+        # Load the module
+        spec = importlib.util.spec_from_file_location(skill_name, skill_file)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        
+        if hasattr(module, "META") and hasattr(module, "run"):
+            self.registry["skills"][skill_name] = {
+                "meta": module.META,
+                "path": skill_file,
+                "added_at": datetime.now().isoformat(),
+                "status": "verified"
+            }
+            self._save_registry()
+            print(f"[✓] Skill registered: {skill_name}")
+            return True
+        return False
+
+    def execute_skill(self, skill_name, input_data):
+        """Execute a registered skill"""
+        if skill_name in self.registry["skills"]:
+            skill_info = self.registry["skills"][skill_name]
+            spec = importlib.util.spec_from_file_location(skill_name, skill_info["path"])
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            return module.run(input_data)
+        else:
+            return {"status": "error", "message": f"Skill {skill_name} not found"}
+
+    def run_evolution_cycle(self):
+        """The core evolution loop (Placeholder for automated discovery)"""
+        print(f"\n[HERMUXCLAW] Starting Evolution Cycle: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+        
+        # 1. Register existing skills
+        for f in os.listdir(self.skills_dir):
+            if f.endswith(".py"):
+                self.register_skill(os.path.join(self.skills_dir, f))
+        
+        self.registry["last_evolution"] = datetime.now().isoformat()
+        self._save_registry()
+        print("[HERMUXCLAW] Cycle Complete.")
+
+if __name__ == "__main__":
+    hermuxclaw = HermuxclawCore()
+    hermuxclaw.run_evolution_cycle()
+    
+    # Test execution of the AST analyzer via the core
+    print("\n[TEST] Running AST Analyzer on core engine...")
+    test_result = hermuxclaw.execute_skill("ast_analyzer", {"file_path": __file__})
+    print(json.dumps(test_result, indent=2))

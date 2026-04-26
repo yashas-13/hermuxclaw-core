@@ -1,0 +1,257 @@
+{
+  "skills": {
+    "ast_analyzer": {
+      "meta": {
+        "name": "ast_analyzer",
+        "version": "1.0",
+        "description": "Deep AST-based code analysis and capability extraction.",
+        "inputs": [
+          "file_path"
+        ],
+        "outputs": [
+          "structure_map",
+          "extracted_capabilities"
+        ]
+      },
+      "path": "/data/data/com.termux/files/home/hermuxclaw/skills/ast_analyzer.py",
+      "added_at": "2026-04-27T03:15:51.174059",
+      "status": "verified"
+    },
+    "discovery_engine": {
+      "meta": {
+        "name": "discovery_engine",
+        "version": "1.1",
+        "description": "High-speed workspace scanner for capability discovery.",
+        "inputs": [
+          "search_path",
+          "max_depth"
+        ],
+        "outputs": [
+          "candidates"
+        ]
+      },
+      "path": "/data/data/com.termux/files/home/hermuxclaw/skills/discovery_engine.py",
+      "added_at": "2026-04-27T03:15:51.180696",
+      "status": "verified"
+    },
+    "skill_extractor": {
+      "meta": {
+        "name": "skill_extractor",
+        "version": "1.1",
+        "description": "Extracts high-value logic from modules and wraps them as Hermuxclaw skills.",
+        "inputs": [
+          "module_path",
+          "target_function"
+        ],
+        "outputs": [
+          "skill_file_path"
+        ]
+      },
+      "path": "/data/data/com.termux/files/home/hermuxclaw/skills/skill_extractor.py",
+      "added_at": "2026-04-27T03:15:51.183178",
+      "status": "verified"
+    },
+    "register_skill": {
+      "meta": {
+        "name": "register_skill",
+        "version": "harvested-1.1",
+        "description": "Auto-harvested from evolution_engine.py",
+        "inputs": [
+          "skill_file"
+        ],
+        "outputs": [
+          "result"
+        ]
+      },
+      "path": "/data/data/com.termux/files/home/hermuxclaw/skills/register_skill.py",
+      "added_at": "2026-04-27T03:15:51.184344",
+      "status": "verified"
+    },
+    "visit_import": {
+      "meta": {
+        "name": "visit_import",
+        "version": "harvested-1.1",
+        "description": "Auto-harvested from ast_analyzer.py",
+        "inputs": [
+          "node"
+        ],
+        "outputs": [
+          "result"
+        ]
+      },
+      "path": "/data/data/com.termux/files/home/hermuxclaw/skills/visit_import.py",
+      "added_at": "2026-04-27T03:15:51.185406",
+      "status": "verified"
+    },
+    "scan_directory": {
+      "meta": {
+        "name": "scan_directory",
+        "version": "harvested-1.1",
+        "description": "Auto-harvested from discovery_engine.py",
+        "inputs": [
+          "path",
+          "depth",
+          "max_depth"
+        ],
+        "outputs": [
+          "result"
+        ]
+      },
+      "path": "/data/data/com.termux/files/home/hermuxclaw/skills/scan_directory.py",
+      "added_at": "2026-04-27T03:15:51.186478",
+      "status": "verified"
+    },
+    "extract_code_block": {
+      "meta": {
+        "name": "extract_code_block",
+        "version": "harvested-1.1",
+        "description": "Auto-harvested from skill_extractor.py",
+        "inputs": [
+          "file_path",
+          "start_line",
+          "end_line"
+        ],
+        "outputs": [
+          "result"
+        ]
+      },
+      "path": "/data/data/com.termux/files/home/hermuxclaw/skills/extract_code_block.py",
+      "added_at": "2026-04-27T03:15:51.187448",
+      "status": "verified"
+    },
+    "load_providers": {
+      "meta": {
+        "name": "load_providers",
+        "version": "harvested-1.1",
+        "description": "Auto-harvested from config.py",
+        "inputs": [
+          "cls"
+        ],
+        "outputs": [
+          "result"
+        ]
+      },
+      "path": "/data/data/com.termux/files/home/hermuxclaw/skills/load_providers.py",
+      "added_at": "2026-04-27T03:15:51.189036",
+      "status": "verified"
+    },
+    "__getitem__": {
+      "meta": {
+        "name": "__getitem__",
+        "version": "harvested-1.1",
+        "description": "Auto-harvested from api.py",
+        "inputs": [
+          "key"
+        ],
+        "outputs": [
+          "result"
+        ]
+      },
+      "path": "/data/data/com.termux/files/home/hermuxclaw/skills/__getitem__.py",
+      "added_at": "2026-04-27T03:15:51.190042",
+      "status": "verified"
+    },
+    "set_model": {
+      "meta": {
+        "name": "set_model",
+        "version": "harvested-1.1",
+        "description": "Auto-harvested from brain.py",
+        "inputs": [
+          "model_name"
+        ],
+        "outputs": [
+          "result"
+        ]
+      },
+      "path": "/data/data/com.termux/files/home/hermuxclaw/skills/set_model.py",
+      "added_at": "2026-04-27T03:15:51.191062",
+      "status": "verified"
+    },
+    "neural_mutator": {
+      "meta": {
+        "name": "neural_mutator",
+        "version": "2.0",
+        "description": "Uses LLM intelligence to refactor harvested code and generate unit tests.",
+        "inputs": [
+          "raw_code",
+          "context_description"
+        ],
+        "outputs": [
+          "refined_code",
+          "unit_test"
+        ]
+      },
+      "path": "/data/data/com.termux/files/home/hermuxclaw/skills/neural_mutator.py",
+      "added_at": "2026-04-27T03:15:51.192140",
+      "status": "verified"
+    },
+    "_evolution_and_sync": {
+      "meta": {
+        "name": "_evolution_and_sync",
+        "version": "harvested-1.1",
+        "description": "Auto-harvested from ecosystem.py",
+        "inputs": [
+          "new_skills"
+        ],
+        "outputs": [
+          "result"
+        ]
+      },
+      "path": "/data/data/com.termux/files/home/hermuxclaw/skills/_evolution_and_sync.py",
+      "added_at": "2026-04-27T03:15:51.193196",
+      "status": "verified"
+    },
+    "execute": {
+      "meta": {
+        "name": "execute",
+        "version": "harvested-1.1",
+        "description": "Auto-harvested from sandbox.py",
+        "inputs": [
+          "code_string",
+          "input_data"
+        ],
+        "outputs": [
+          "result"
+        ]
+      },
+      "path": "/data/data/com.termux/files/home/hermuxclaw/skills/execute.py",
+      "added_at": "2026-04-27T03:15:51.194294",
+      "status": "verified"
+    },
+    "vision_processor": {
+      "meta": {
+        "name": "vision_processor",
+        "version": "1.0",
+        "description": "Processes images using small, efficient vision models (targeted for 0.5B - 2B).",
+        "inputs": [
+          "image_path",
+          "prompt"
+        ],
+        "outputs": [
+          "analysis"
+        ]
+      },
+      "path": "/data/data/com.termux/files/home/hermuxclaw/skills/vision_processor.py",
+      "added_at": "2026-04-27T03:15:51.462257",
+      "status": "verified"
+    },
+    "low_ram_vision": {
+      "meta": {
+        "name": "low_ram_vision",
+        "version": "1.1",
+        "description": "Optimized vision analysis for low-resource environments.",
+        "inputs": [
+          "image_path",
+          "prompt"
+        ],
+        "outputs": [
+          "response"
+        ]
+      },
+      "path": "/data/data/com.termux/files/home/hermuxclaw/skills/low_ram_vision.py",
+      "added_at": "2026-04-27T03:15:51.463417",
+      "status": "verified"
+    }
+  },
+  "last_evolution": "2026-04-27T03:15:51.464221"
+}

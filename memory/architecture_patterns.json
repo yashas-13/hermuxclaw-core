@@ -1,0 +1,5 @@
+{
+  "HIGH_COUPLING": "Extract core logic into separate, independent utility functions or classes to reduce dependency degree. Verified fix applied recently. Verified fix applied recently. Verified fix applied recently.",
+  "CIRCULAR_DEPENDENCY": "Identify the shared resource causing the cycle and extract it into a new, neutral third module. Verified fix applied recently. Verified fix applied recently. Verified fix applied recently. Verified fix applied recently.",
+  "ISOLATION": "Review if the isolated module should be integrated into core workflows, or deprecated if obsolete."
+}

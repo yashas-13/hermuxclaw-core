@@ -1,0 +1,66 @@
+import os
+import json
+import importlib.util
+from datetime import datetime
+
+class SkillRegistry:
+    def __init__(self):
+        self.registry = {}
+
+    def register_skill(self, skill_file):
+        """Dynamic loading and registration of a skill"""
+        skill_name = os.path.basename(skill_file).replace(".py", "")
+        
+        # Load the module
+        spec = importlib.util.spec_from_file_location(skill_name, skill_file)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        
+        if hasattr(module, "META") and hasattr(module, "run"):
+            self.registry[skill_name] = {
+                "meta": module.META,
+                "path": skill_file,
+                "added_at": datetime.now().isoformat(),
+                "status": "verified"
+            }
+            self._save_registry()
+            print(f"[✓] Skill registered: {skill_name}")
+            return True
+        return False
+
+    def _save_registry(self):
+        # TO DO: implement registry saving logic
+        pass
+
+    def load_registry(self):
+        # TO DO: implement registry loading logic
+        pass
+
+
+def run(input_data, registry):
+    # Auto-generated wrapper
+    try:
+        # Map input_data to function args
+        kwargs = {k: input_data.get(k) for k in registry.META["inputs"] if k in input_data}
+        # Note: If it was a method, this execution might fail without 'self' context.
+        # This is a known limitation of the initial extraction phase.
+        res = registry.register_skill(**kwargs)
+        return {"status": "success", "result": res}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+def main():
+    registry = SkillRegistry()
+    register_skill = registry.register_skill
+    run_func = run
+    
+    # Example usage
+    skill_file = "path/to/skill.py"
+    input_data = {"inputs": {"skill_file": skill_file}}
+    result = run_func(input_data, registry)
+    print(result)
+
+
+if __name__ == "__main__":
+    main()
