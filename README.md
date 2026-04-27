@@ -63,15 +63,28 @@ Access the refined **HX-CORE Command Center** at `http://localhost:8013`:
 
 ---
 
-## 🏁 Getting Started
-```bash
-# Clone the Organism
-git clone https://github.com/yashas-13/hermuxclaw-core.git
+## 🏁 Quick Start: One-Command Setup
+To bootstrap the entire **HermuXclaw-CORE** ecosystem on your device, run the following command:
 
-# Initialize the Nerve System
-cd hermuxclaw-core
-python3 core/orchestrator.py
+```bash
+chmod +x setup.sh && ./setup.sh
 ```
+
+### **What the setup script does:**
+1.  **System Sync**: Updates packages and installs `git`, `python`, `curl`, and `termux-api`.
+2.  **Environment Check**: Installs all required Python libraries from `requirements.txt`.
+3.  **Local Brain Link**: Prepares the **Ollama** environment and pulls the **Qwen2.5-Coder** model.
+4.  **Database Boot**: Initializes the persistent Knowledge Graph and Evolution Ledger.
+
+---
+
+## ⚡ Execution Commands
+| Command | Action |
+| :--- | :--- |
+| `make run` | Starts the background Orchestrator loop. |
+| `make dev` | Starts the **Dashboard** + **Orchestrator** (Full UI mode). |
+| `make test` | Executes the Full System Integrity Audit. |
+| `make clean` | Wipes logs and temporary evolution snapshots. |
 
 ---
 
