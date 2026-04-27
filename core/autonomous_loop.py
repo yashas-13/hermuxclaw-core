@@ -34,10 +34,8 @@ class AutonomousLoop:
             iteration += 1
             print(f"\n[🔄 LOOP] Iteration {iteration} | Mind State: {self.brain.iq_baseline} IQ")
             
-            # 2. ORCHESTRATOR: Execute current plan
-            results = self.orch.execute({"name": "autonomous_step", "steps": [
-                {"skill": "ast_extractor_skill", "input": {"source_code": "print('loop')", "target_function": "print"}}
-            ]})
+            # 2. ORCHESTRATOR: Execute plan based on actual directive
+            results = self.orch.execute({"name": user_directive, "steps": []})
             total_results.update(results)
             
             # 3. EVALUATE (Internal check)

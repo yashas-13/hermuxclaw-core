@@ -11,7 +11,7 @@
 ---
 
 ## 🌌 The Vision
-**HermuXclaw-CORE** is not just an agent; it is a **Sovereign Digital Organism**. Built to operate at the intersection of static structural analysis and real-time behavioral tracing, it proactively discovers, harvests, and refines code to evolve its own capabilities indefinitely.
+**HermuXclaw-CORE** is a **Sovereign Digital Organism** with a **Mind, Brain, and Soul**. It operates at the intersection of static structural analysis and real-time behavioral tracing, proactively discovering and refining its own capabilities indefinitely.
 
 > *"Most agents use tools. HermuXclaw is the factory that builds them."*
 
@@ -19,25 +19,38 @@
 
 ## 🚀 Elite Capabilities
 
-### ⚡ **1. Proactive Evolution (ToolSmith)**
-Rather than reactive debugging, HermuXclaw proactively invents. It generates multiple variations of a required capability and runs them in a **Sandbox Tournament**, archiving only the fastest and most stable "survivor."
+### 🧠 **1. Recursive Brain & Consciousness**
+The agent analyzes user behavior through psychological heuristics and performs **Chain-of-Self-Reflection**. It tracks its own internal **IQ Baseline**, which increases with every successful mission.
 
-### 🧬 **2. Structural DNA Editing (AST Engine)**
-Every line of code is parsed into a high-fidelity Knowledge Graph. HermuXclaw uses its deterministic understanding of its own Abstract Syntax Tree (AST) to refactor "God Objects" and heal circular dependencies autonomously.
+### 🌐 **2. Visual Browser Domination**
+Deep integration with **Termux Browser Pilot (TBP)**. The agent can now navigate, click, type, and screenshot the live web to source real-world business leads and technical data.
 
-### 🔋 **3. Zero-Waste Resource Governance**
-Operates under strict **Energy Budgeting**. The system monitors Android hardware vitals via the `Intent Bridge`, adjusting its compute intensity based on battery levels and thermal constraints.
+### 🧬 **3. Structural DNA Editing (AST Engine)**
+Every line of code is parsed into a high-fidelity Knowledge Graph. HermuXclaw uses its deterministic understanding of its own AST to refactor "God Objects" and heal circular dependencies autonomously.
 
-### 🕸️ **4. Federated Swarm Intelligence**
-Supports multi-device synchronization. Nodes on a local network cross-pollinate their "Verified DNA" (best-performing skills) via the Swarm Node, enabling decentralized super-intelligence.
+### 📊 **4. Self-Evaluation Engine**
+Codifies **18 Desired Outcomes** into measurable KPIs. After every run, the system scores its own IQ growth based on efficiency, knowledge captured, and mission success.
+
+---
+
+## 📡 Strict API Contract (Port 8013)
+| Endpoint | Description |
+| :--- | :--- |
+| `/graph` | System intelligence and call relationship map. |
+| `/tasks` | Real-time execution visibility and task queue. |
+| `/energy` | Live resource governor state and forecast. |
+| `/iq` | **[NEW]** System intelligence growth and historical run scores. |
+| `/stats` | Tracked files, functions, and system uptime. |
+| `/swarm` | Distributed hive node workload monitoring. |
+| `/api/chat` | The Supreme Commander command interface. |
 
 ---
 
 ## 📊 Command Center (Real-Time Observability)
-The **HX-CORE Command Center** provides deep introspection into the agent's nervous system:
+Access the refined **HX-CORE Command Center** at `http://localhost:8013`:
 - **D3 Physics Graph**: A living simulation of the system's neural pathways.
 - **Framer-Motion Terminal**: Animated "Eye-Rolling" activity streams showing background evolution.
-- **Hybrid Truth Map**: Merges static code structure with real-time `sys.settrace` behavioral data.
+- **IQ Monitor**: Real-time visualization of intelligence growth and performance metrics.
 
 ---
 
@@ -45,8 +58,8 @@ The **HX-CORE Command Center** provides deep introspection into the agent's nerv
 - [x] **v1.0 Production Stack**: Self-healing, persistent SQLite memory, and AST Intelligence.
 - [x] **Global Data Vault**: Federated Supabase integration for multi-device sync.
 - [x] **Hardware Peripheral Bridge**: Direct Android Telephony & Battery awareness.
-- [ ] **Predictive Anomaly Forecasting**: Time-series trend analysis for system health.
-- [ ] **Recursive Self-Architecture**: Allowing the agent to rewrite its own Orchestrator logic.
+- [x] **Recursive Brain**: Self-reflection and recursive goal-seeking loop.
+- [x] **Visual Browser MCP**: Real-world web navigation and lead harvesting.
 
 ---
 
@@ -59,8 +72,6 @@ git clone https://github.com/yashas-13/hermuxclaw-core.git
 cd hermuxclaw-core
 python3 core/orchestrator.py
 ```
-
-*Access the Intelligence Dashboard at:* `http://localhost:8013`
 
 ---
 
