@@ -23,36 +23,107 @@ async function fetchAPI(endpoint) {
 }
 
 async function updateDashboard() {
-    const [graph, tasks, energy, swarm, alerts] = await Promise.all([
+    const [graph, tasks, energy, swarm, alerts, iq] = await Promise.all([
         fetchAPI('/graph'), fetchAPI('/tasks'), fetchAPI('/energy'),
-        fetchAPI('/swarm'), fetchAPI('/alerts')
+        fetchAPI('/swarm'), fetchAPI('/alerts'), fetchAPI('/iq')
     ]);
 
-    // Update Header Status
+    // ... (rest of header update logic)
     const statusEl = document.getElementById('sys-status');
     const energyVal = energy ? energy.current : 0;
     const taskCount = tasks ? tasks.pending : 0;
+    // ...
 
-    if (energyVal < 20) {
-        statusEl.innerText = "CRITICAL";
-        statusEl.className = "system-status status-critical";
-    } else if (taskCount > 50) {
-        statusEl.innerText = "DEGRADED";
-        statusEl.className = "system-status status-degraded";
-    } else {
-        statusEl.innerText = "ACTIVE";
-        statusEl.className = "system-status status-active";
-    }
-
-    document.getElementById('header-energy').innerText = `${energyVal}%`;
-    document.getElementById('header-tasks').innerText = taskCount;
-    document.getElementById('energy-fill').style.width = `${energyVal}%`;
-
+    if (iq) renderIQ(iq);
     if (graph) renderGraph(graph);
-    if (swarm) renderSwarm(swarm);
-    if (tasks) renderTasks(tasks);
-    if (alerts) renderAlerts(alerts);
+    // ...
 }
+
+function renderIQ(data) {
+    document.getElementById('iq-val').innerText = data.average_system_iq;
+    const history = document.getElementById('iq-history');
+    history.innerHTML = data.latest_runs.map(r => `
+        <div style="margin-bottom:6px; border-bottom:1px solid #111; padding-bottom:4px;">
+            <div style="color:var(--text);">${r.directive.substring(0, 25)}...</div>
+            <div style="display:flex; justify-content:space-between; font-size:0.6rem;">
+                <span style="color:#a855f7;">IQ: ${r.score}</span>
+                <span>${new Date(r.time).toLocaleTimeString()}</span>
+            </div>
+        </div>
+    `).join('');
+}
+
+
+function addTerminalLog(msg) {
+    const body = document.getElementById('terminal-body');
+    const line = document.createElement('div');
+    line.className = 'log-line';
+    line.innerText = `> ${new Date().toLocaleTimeString()} | ${msg}`;
+    body.prepend(line);
+    if (body.childNodes.length > 8) body.removeChild(body.lastChild);
+}
+
+// CHATBOT LOGIC
+const chatInput = document.getElementById('chat-input');
+const chatSend = document.getElementById('chat-send');
+const chatOutput = document.getElementById('chat-output');
+
+async function sendDirective(overrideText = null) {
+    const text = overrideText || chatInput.value.trim();
+    if (!text) return;
+
+    if (!overrideText) chatInput.value = '';
+    appendMsg(text, 'user');
+    
+    showTyping();
+    document.getElementById('chatbot-panel').classList.add('thinking');
+    addTerminalLog(`Directing input to Neural Mutator...`);
+    
+    try {
+        const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: text })
+        });
+        const data = await res.json();
+        hideTyping();
+        document.getElementById('chatbot-panel').classList.remove('thinking');
+        appendMsg(data.response, 'ai');
+        addTerminalLog(`Objective received and acknowledged.`);
+    } catch (e) {
+        hideTyping();
+        document.getElementById('chatbot-panel').classList.remove('thinking');
+        appendMsg("Communication link interrupted.", "system");
+    }
+}
+
+function sendChip(cmd) {
+    sendDirective(cmd);
+}
+
+function appendMsg(text, sender) {
+    const div = document.createElement('div');
+    div.className = `chat-msg ${sender}`;
+    
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const label = sender === 'user' ? 'OPERATOR' : (sender === 'ai' ? 'HX-CORE' : 'SYSTEM');
+    
+    // Render Markdown for AI responses
+    const formattedBody = sender === 'ai' ? marked.parse(text) : text;
+    
+    div.innerHTML = `
+        <span style="font-weight:bold; font-size:0.65rem; display:block; margin-bottom:4px; opacity:0.8;">${label}</span>
+        <div class="msg-body">${formattedBody}</div>
+        <span class="msg-meta">${time}</span>
+    `;
+    
+    chatOutput.appendChild(div);
+    chatOutput.scrollTop = chatOutput.scrollHeight;
+}
+
+chatSend.addEventListener('click', sendDirective);
+chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendDirective(); });
+
 
 function renderGraph(data) {
     const nodesMap = new Map();

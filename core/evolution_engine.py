@@ -1,78 +1,89 @@
-import os
-import json
-import importlib.util
-import sys
-from datetime import datetime
+# core/evolution_engine.py
+import concurrent.futures, logging, copy, os, sys
 
-class HermuxclawCore:
+# Ensure paths are correct for local imports
+sys.path.append(os.path.expanduser("~/hermuxclaw"))
+
+from skills.ast_extractor_skill import ASTExtractorSkill
+from skills.skill_validator_skill import SkillValidatorSkill
+from memory.skill_registry import SkillRegistry
+
+class EvolutionEngine:
+    """
+    The Sandbox Tournament engine.
+    Generates multiple skill variants, benchmarks them in parallel, 
+    and crowns the winner based on execution speed and validity.
+    """
     def __init__(self):
-        self.base_dir = os.path.expanduser("~/hermuxclaw")
-        self.skills_dir = os.path.join(self.base_dir, "skills")
-        self.memory_file = os.path.join(self.base_dir, "memory/registry.json")
-        self.registry = self._load_registry()
-        # Auto-register existing skills on startup
-        self.run_evolution_cycle()
+        self.extractor = ASTExtractorSkill()
+        self.validator = SkillValidatorSkill()
+        self.registry = SkillRegistry()
 
-    def _load_registry(self):
-        if os.path.exists(self.memory_file):
-            with open(self.memory_file, "r") as f:
-                return json.load(f)
-        return {"skills": {}, "last_evolution": None}
-
-    def _save_registry(self):
-        with open(self.memory_file, "w") as f:
-            json.dump(self.registry, f, indent=2)
-
-    def register_skill(self, skill_file):
-        """Dynamic loading and registration of a skill"""
-        skill_name = os.path.basename(skill_file).replace(".py", "")
+    def evolve(self, source_code: str, target_func: str,
+               test_input: dict, variants: int = 3) -> dict:
+        """Execute the tournament loop for a specific code fragment."""
         
-        # Load the module
-        spec = importlib.util.spec_from_file_location(skill_name, skill_file)
-        module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(module)
+        # 1. Extraction Pass
+        extracted = self.extractor.run({
+            "source_code": source_code,
+            "target_function": target_func
+        })
         
-        if hasattr(module, "META") and hasattr(module, "run"):
-            self.registry["skills"][skill_name] = {
-                "meta": module.META,
-                "path": skill_file,
-                "added_at": datetime.now().isoformat(),
-                "status": "verified"
-            }
-            self._save_registry()
-            print(f"[✓] Skill registered: {skill_name}")
-            return True
-        return False
+        # 2. Variant Generation (Currently clones, expandable to LLM-mutation)
+        candidates = [extracted["skill_template"]] * variants
+        results = []
+        
+        # 3. Parallel Benchmarking (The Tournament)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=variants) as ex:
+            futures = {ex.submit(self._bench, c, test_input): i
+                       for i, c in enumerate(candidates)}
+            
+            for future in concurrent.futures.as_completed(futures):
+                idx = futures[future]
+                try:
+                    r = future.result()
+                    r["variant_id"] = idx
+                    results.append(r)
+                except Exception as e:
+                    results.append({
+                        "variant_id": idx, "error": str(e),
+                        "latency_ms": 9999, "valid": False
+                    })
+        
+        # 4. Selection: The fastest valid variant wins
+        valid_results = [r for r in results if r.get("valid")]
+        if not valid_results:
+            return {"status": "error", "message": "No variants passed validation."}
+            
+        winner = min(valid_results, key=lambda x: x.get("latency_ms", 9999))
+        
+        # 5. Registration
+        # Note: In production, we'd map the winner to a real file path
+        self.registry.register({
+            "name": f"evolved_{target_func}",
+            "latency_ms": winner["latency_ms"],
+            "status": "active"
+        })
+        
+        logging.info(f"🏆 Evolution winner: variant {winner['variant_id']} "
+                     f"| {winner['latency_ms']}ms")
+                     
+        return winner
 
-    def execute_skill(self, skill_name, input_data):
-        """Execute a registered skill"""
-        if skill_name in self.registry["skills"]:
-            skill_info = self.registry["skills"][skill_name]
-            spec = importlib.util.spec_from_file_location(skill_name, skill_info["path"])
-            module = importlib.util.module_from_spec(spec)
-            spec.loader.exec_module(module)
-            return module.run(input_data)
-        else:
-            return {"status": "error", "message": f"Skill {skill_name} not found"}
+    def _bench(self, skill_code: str, test_input: dict) -> dict:
+        """Internal worker to execute a single candidate in isolation."""
+        tmp = os.path.expanduser("~/hermuxclaw/storage/hx_candidate.py")
+        os.makedirs(os.path.dirname(tmp), exist_ok=True)
+        
+        with open(tmp, "w") as f:
+            f.write(skill_code)
+            
+        return self.validator.run({
+            "skill_path": tmp, 
+            "test_input": test_input
+        })
 
     def run_evolution_cycle(self):
-        """The core evolution loop (Placeholder for automated discovery)"""
-        print(f"\n[HERMUXCLAW] Starting Evolution Cycle: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        
-        # 1. Register existing skills
-        for f in os.listdir(self.skills_dir):
-            if f.endswith(".py"):
-                self.register_skill(os.path.join(self.skills_dir, f))
-        
-        self.registry["last_evolution"] = datetime.now().isoformat()
-        self._save_registry()
-        print("[HERMUXCLAW] Cycle Complete.")
+        """Stub for compatibility."""
+        logging.info("Evolution cycle triggered manually.")
 
-if __name__ == "__main__":
-    hermuxclaw = HermuxclawCore()
-    hermuxclaw.run_evolution_cycle()
-    
-    # Test execution of the AST analyzer via the core
-    print("\n[TEST] Running AST Analyzer on core engine...")
-    test_result = hermuxclaw.execute_skill("ast_analyzer", {"file_path": __file__})
-    print(json.dumps(test_result, indent=2))

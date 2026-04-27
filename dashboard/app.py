@@ -30,6 +30,15 @@ class ProductionDashboardHandler(BaseHTTPRequestHandler):
             self.send_json([{"node": "CORE-01", "energy": 85, "tasks": pending}])
         elif self.path == "/alerts":
             self.send_json([{"level": "INFO", "msg": "System Nominal"}])
+        elif self.path == "/iq":
+            # Fetch latest runs
+            runs = db.query("SELECT directive, iq_score, timestamp FROM workflow_runs ORDER BY timestamp DESC LIMIT 5")
+            avg_iq = db.query("SELECT AVG(iq_score) FROM workflow_runs")[0][0] or 0
+            self.send_json({
+                "average_system_iq": round(float(avg_iq), 2),
+                "latest_runs": [{"directive": r[0], "score": r[1], "time": r[2]} for r in runs]
+            })
+            
         elif self.path == "/stats":
             files = db.query("SELECT COUNT(*) FROM files")[0][0]
             self.send_json({"tracked_files": files, "uptime": "Continuous"})
@@ -51,6 +60,41 @@ class ProductionDashboardHandler(BaseHTTPRequestHandler):
             else:
                 self.send_response(404)
                 self.end_headers()
+
+    def do_POST(self):
+        if self.path == "/api/chat":
+            content_length = int(self.headers['Content-Length'])
+            post_data = self.rfile.read(content_length)
+            request = json.loads(post_data)
+            
+            user_message = request.get("message", "")
+            from skills import neural_mutator
+            from core.scheduler import scheduler
+            
+            # 1. Analyze and Execute (using 0.5B model)
+            print(f"[*] Command Center: Processing prompt with 0.5B intelligence...")
+            
+            # Check for specific command keywords to trigger logic while generating response
+            if "evolve" in user_message.lower():
+                scheduler.add_task("DISCOVER_WORKSPACE", priority=25)
+            elif "repair" in user_message.lower():
+                scheduler.add_task("SYSTEM_HEALTH_CHECK", priority=30)
+
+            # 2. Generate Reply via 0.5B model
+            ai_res = neural_mutator.run({
+                "raw_code": user_message, # Passing the prompt as "code" for mutation-style response
+                "context_description": "User Interaction"
+            })
+            
+            response = ai_res.get("refined_code", "I am processing your directive via my 0.5B core.")
+            
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps({"response": response}).encode())
+        else:
+            self.send_response(404)
+            self.end_headers()
 
     def send_json(self, data):
         self.send_response(200)

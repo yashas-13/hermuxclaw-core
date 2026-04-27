@@ -121,6 +121,14 @@ Refactor the code to resolve this anomaly. Ensure it remains fully functional. R
                             f.write(refactored_code)
                         print(f"      - [✓] Dry Run: Optimized code saved to {file_rel_path}.optimized")
                     else:
+                        # HUMAN-IN-THE-LOOP GATE FOR CORE
+                        if "core/" in file_rel_path:
+                            print(f"      - [!] CRITICAL: Core modification detected for {file_rel_path}.")
+                            print(f"      - [!] STAGING: Review {file_rel_path}.optimized before manual application.")
+                            with open(file_abs_path + ".optimized", "w") as f:
+                                f.write(refactored_code)
+                            continue
+                            
                         with open(file_abs_path, "w") as f:
                             f.write(refactored_code)
                         print(f"      - [✓] Applied: File {file_rel_path} has been actively refactored.")

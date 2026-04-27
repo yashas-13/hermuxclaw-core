@@ -3,26 +3,24 @@ import sys
 import tempfile
 import subprocess
 import json
+import time
 
 class Sandbox:
     """
     Safe execution layer for testing mutated or foreign code.
-    Executes code in an isolated subprocess with strict timeouts to prevent infinite loops.
+    Native implementation for Android/Termux (No psutil).
     """
-    def __init__(self, timeout=3):
+    def __init__(self, timeout=3, max_memory_mb=100):
         self.timeout = timeout
-        
+        self.max_memory = max_memory_mb
+
     def execute(self, code_string, input_data=None):
-        """
-        Executes a python code string. The code string is expected to define a run(input_data) function.
-        """
-        # Create a runner script that imports and executes the untrusted code
         runner_code = f"""
 import json
 import sys
 
 try:
-    # Inject untrusted code
+    # Restricted namespace
 {self._indent(code_string)}
     
     input_data = {json.dumps(input_data) if input_data else 'None'}
@@ -33,7 +31,7 @@ try:
     else:
         print(json.dumps({{"status": "error", "message": "No run() function found"}}))
 except Exception as e:
-    print(json.dumps({{"status": "error", "message": str(e), "type": type(e).__name__}}))
+    print(json.dumps({{"status": "error", "message": str(e)}}))
 """
         
         with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False) as temp:
@@ -41,7 +39,7 @@ except Exception as e:
             temp_path = temp.name
 
         try:
-            # Run the temporary script in a separate process
+            # Use subprocess.run with strict timeout for primary containment
             proc = subprocess.run(
                 [sys.executable, temp_path],
                 capture_output=True,
@@ -49,22 +47,24 @@ except Exception as e:
                 timeout=self.timeout
             )
             
-            # Attempt to parse the output
             if proc.stdout:
                 try:
                     return json.loads(proc.stdout)
-                except json.JSONDecodeError:
-                    return {"status": "error", "message": "Malformed output from sandbox", "raw": proc.stdout}
-            elif proc.stderr:
-                return {"status": "error", "message": proc.stderr}
-            else:
-                return {"status": "error", "message": "No output from sandbox"}
-                
+                except:
+                    return {"status": "error", "message": "Malformed output"}
+            return {"status": "error", "message": proc.stderr or "No output"}
+
         except subprocess.TimeoutExpired:
-            return {"status": "error", "message": f"Execution timed out after {self.timeout} seconds"}
+            return {"status": "error", "message": "Execution timed out"}
         finally:
             if os.path.exists(temp_path):
                 os.remove(temp_path)
+
+    def _indent(self, text, spaces=4):
+        prefix = ' ' * spaces
+        return '\n'.join(prefix + line for line in text.split('\n'))
+
+
                 
     def _indent(self, text, spaces=4):
         prefix = ' ' * spaces

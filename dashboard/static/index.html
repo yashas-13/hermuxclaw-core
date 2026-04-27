@@ -6,6 +6,7 @@
     <title>HX-CORE | Command Center</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <!-- HEADER (GLOBAL STATE) -->
@@ -26,34 +27,62 @@
                 <svg id="graph-canvas"></svg>
                 <div id="tooltip" class="tooltip"></div>
             </div>
+            <!-- VERBOSE ACTIVITY TERMINAL -->
+            <div id="activity-terminal">
+                <div class="terminal-header">BACKGROUND ACTIVITY STREAM</div>
+                <div id="terminal-body"></div>
+            </div>
+        </section>
+
+        <!-- COMMAND CENTER (CHATBOT) -->
+        <section class="section" id="chatbot-panel">
+            <div id="sidebar-top">
+                <div class="panel">
+                    <h2 style="border-left: 3px solid #a855f7;">System IQ Monitor</h2>
+                    <div class="data-row"><span>Aggregate IQ</span><span class="data-val" id="iq-val" style="color: #a855f7;">--</span></div>
+                    <div id="iq-history" style="font-size: 0.7rem; margin-top: 10px; color: var(--text-muted);">
+                        <!-- History injected -->
+                    </div>
+                </div>
+            </div>
+            <h2>Command Center</h2>
+            <div id="chat-output" class="scroll-list">
+                <div class="chat-msg system">Waiting for directive...</div>
+            </div>
+
+            <!-- QUICK ACTION CHIPS -->
+            <div id="action-chips" style="display: flex; gap: 8px; padding: 10px; flex-wrap: wrap; justify-content: center;">
+                <button class="chip" onclick="sendChip('evolve')">🧬 EVOLVE</button>
+                <button class="chip" onclick="sendChip('repair')">🩺 REPAIR</button>
+                <button class="chip" onclick="sendChip('status')">📊 STATUS</button>
+                <button class="chip" onclick="sendChip('clean')">🧹 CLEAN</button>
+            </div>
+
+            <div id="chat-input-container">
+                <input type="text" id="chat-input" placeholder="Define objective...">
+                <button id="chat-send">GO</button>
+            </div>
         </section>
 
         <!-- SWARM + ENERGY (RIGHT CONTROL) -->
         <section class="section" id="control-panel">
-            <h2>Resource Governor & Swarm</h2>
-            <div class="energy-bar-container">
-                <div class="energy-bar-bg">
-                    <div class="energy-bar-fill" id="energy-fill" style="width: 0%;"></div>
+            <div id="energy-governor">
+                <h2>Resource Governor & Swarm</h2>
+                <div class="energy-bar-container">
+                    <div class="energy-bar-bg">
+                        <div class="energy-bar-fill" id="energy-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+                <div class="scroll-list" id="swarm-list">
+                    <!-- Swarm injected -->
                 </div>
             </div>
-            <div class="scroll-list" id="swarm-list">
-                <!-- Swarm injected -->
-            </div>
-        </section>
-
-        <!-- TASK FLOW (BOTTOM LEFT) -->
-        <section class="section" id="task-panel">
-            <h2>Execution Visibility</h2>
-            <div class="scroll-list" id="task-list">
-                <!-- Tasks injected -->
-            </div>
-        </section>
-
-        <!-- ALERTS (BOTTOM RIGHT) -->
-        <section class="section" id="alert-panel">
-            <h2>Critical Signals</h2>
-            <div class="scroll-list" id="alert-list">
-                <!-- Alerts injected -->
+            
+            <div id="alert-governor" style="margin-top:20px; flex:1; display:flex; flex-direction:column;">
+                <h2>Critical Signals</h2>
+                <div class="scroll-list" id="alert-list">
+                    <!-- Alerts injected -->
+                </div>
             </div>
         </section>
     </main>

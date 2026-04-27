@@ -16,21 +16,24 @@ META = {
 def call_intelligence(prompt):
     """
     Routes the request to the best available local LLM or API.
-    Uses NVIDIA NIM API via openai client.
+    Dynamically scales model tier based on system evolution.
     """
     try:
         from openai import OpenAI
-        # Use the key from the environment or fallback to the one seen in test scripts
+        from core.model_upgrader import ModelUpgrader
+        
+        upgrader = ModelUpgrader()
+        target_model = upgrader.get_current_model_id()
+        
+        print(f"[*] Neural Mutator: Utilizing Intelligence Tier {upgrader.state['tier']} ({target_model})")
+        
         api_key = os.environ.get("NIM_API_KEY", "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")
         client = OpenAI(
             base_url="https://integrate.api.nvidia.com/v1",
             api_key=api_key
         )
         
-        # Use a small, efficient model
-        target_model = "meta/llama-3.2-3b-instruct" 
-        
-        system_prompt = "You are an elite Python Architect. You refactor code for the HERMUXCLAW system. Return ONLY the refactored code. No conversational filler, no markdown blocks. Just raw Python."
+        system_prompt = f"You are an elite Python Architect at Intelligence Tier {upgrader.state['tier']}. You refactor code for the HERMUXCLAW system. Return ONLY the refactored code. No conversational filler, no markdown blocks. Just raw Python."
         
         completion = client.chat.completions.create(
             model=target_model,
@@ -39,7 +42,7 @@ def call_intelligence(prompt):
                 {"role": "user", "content": prompt}
             ],
             max_tokens=2048,
-            temperature=0.2
+            temperature=0.1
         )
         
         result_code = completion.choices[0].message.content.strip()

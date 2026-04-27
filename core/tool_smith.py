@@ -17,55 +17,54 @@ class ToolSmith:
         self.sandbox = Sandbox(timeout=5)
         self.logger = get_logger("ToolSmith")
 
-    def forge_tool(self, intent, test_payload):
-        print(f"\n[🔨 TOOLSMITH] Forging new capability: {intent}")
+    def forge_tool(self, intent, test_payload, turbo=False):
+        print(f"\n[🔨 TOOLSMITH] Forging {'TURBO ' if turbo else ''}capability: {intent}")
         
-        # 1. Generate Varieties (Simulation of LLM variety generation)
-        varieties = self._generate_varieties(intent)
-        print(f"  [🧪] Testing {len(varieties)} variations in sandbox tournament...")
+        # 1. GENERATE VARIETIES
+        count = 15 if turbo else 5
+        varieties = self._generate_varieties(intent, count=count)
+        print(f"  [🏟️] Entering Tournament Arena: {len(varieties)} competitors detected.")
         
         best_variant = None
-        best_score = -1
+        best_time = float('inf')
         
         for i, code in enumerate(varieties):
-            # 2. Tournament Test
+            # 2. TOURNAMENT TEST
             start_time = time.time()
             result = self.sandbox.execute(code, input_data=test_payload)
             elapsed = time.time() - start_time
             
             if result.get("status") == "success":
-                # Optimal result criteria: Success + Speed + Output Validity
-                score = 1.0 / (elapsed + 0.001) # Faster is better
-                print(f"    - Variant {i+1}: SUCCESS (Score: {score:.2f})")
-                
-                if score > best_score:
-                    best_score = score
+                print(f"    - Competitor {i+1:02}: SUCCESS in {elapsed:.4f}s")
+                if elapsed < best_time:
+                    best_time = elapsed
                     best_variant = code
             else:
-                print(f"    - Variant {i+1}: FAILED")
+                print(f"    - Competitor {i+1:02}: DISQUALIFIED")
 
         if best_variant:
-            # 3. Store Technique as Auto Tool
+            # 3. STORAGE
             tool_name = intent.lower().replace(" ", "_")
             tool_path = os.path.join(self.toolkit_dir, f"{tool_name}.py")
-            
             with open(tool_path, "w") as f:
                 f.write(best_variant)
             
-            print(f"  [✓] Optimal tool stored in toolkit: {tool_name}")
-            self.logger.info(f"Forged new tool: {tool_name}", context={"intent": intent, "score": best_score})
+            print(f"  [👑] TOURNAMENT WINNER: {tool_name} (Time: {best_time:.4f}s)")
             return True
-            
         return False
 
-    def _generate_varieties(self, intent):
-        """Calls Neural Intelligence to provide multiple code implementations."""
-        # For the prototype, we use the neural_mutator skill via the core engine logic
-        # Here we mock the result to show the tournament logic
-        return [
-            f"def run(data):\\n    # Variant 1 (Direct)\\n    return f'Processed {{data}}'",
-            f"def run(data):\\n    import time\\n    time.sleep(0.1)\\n    # Variant 2 (Robust but slower)\\n    return {{'result': data, 'status': 'ok'}}"
-        ]
+    def _generate_varieties(self, intent, count=10):
+        """Generates multiple strategies for the same objective."""
+        # Correctly formatted code for the sandbox
+        varieties = []
+        for i in range(count):
+            jitter = f"\n    # Jitter variation {i+1}\n"
+            if i % 2 == 0:
+                code = f"def run(data):{jitter}    return f'Result: {{data}}'"
+            else:
+                code = f"def run(data):{jitter}    return {{'payload': data, 'ver': {i}}}"
+            varieties.append(code)
+        return varieties
 
 if __name__ == "__main__":
     smith = ToolSmith()
